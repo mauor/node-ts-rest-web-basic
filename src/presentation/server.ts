@@ -3,19 +3,20 @@ import path from 'path';
 
 interface Options{
     port: number;
-    publicPath: string;
+    publicPath?: string;
     routes: Router; 
 }
 
 export class Server{
 
-    private app = express();
+    public app = express();
+    private serverListener?: any;
     private readonly  port: number;
     private readonly  publicPath: string;
     private readonly  routes: Router;
 
     constructor(options: Options) {
-        const { port, publicPath, routes } = options;
+        const { port, publicPath = 'public', routes } = options;
         this.port = port;
         this.publicPath = publicPath;
         this.routes = routes;
@@ -43,9 +44,14 @@ export class Server{
                 return
         })
         
-        this.app.listen(this.port, () => {
+        this.serverListener =  this.app.listen(this.port, () => {
             console.log(`Server running on port ${this.port}`);
-        })
+        });
+
+    }
+    
+    public close(){
+        this.serverListener?.close();
     }
 
 }
